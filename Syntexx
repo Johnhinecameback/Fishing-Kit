@@ -1,0 +1,109 @@
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local InsantAutoCatch = Instance.new("TextButton")
+local Requestfish = Instance.new("TextButton")
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0.158186555, 0, 0.284172654, 0)
+Frame.Size = UDim2.new(0, 309, 0, 222)
+
+UICorner.CornerRadius = UDim.new(0, 11)
+UICorner.Parent = Frame
+
+local dragging = false
+local dragInput, dragStart, startPos
+
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging then
+        local delta = input.Position - dragStart
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+Frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+InsantAutoCatch.Name = "InsantAutoCatch"
+InsantAutoCatch.Parent = Frame
+InsantAutoCatch.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+InsantAutoCatch.BorderColor3 = Color3.fromRGB(0, 0, 0)
+InsantAutoCatch.BorderSizePixel = 0
+InsantAutoCatch.Position = UDim2.new(0.174757287, 0, 0.103603601, 0)
+InsantAutoCatch.Size = UDim2.new(0, 200, 0, 50)
+InsantAutoCatch.Font = Enum.Font.SourceSans
+InsantAutoCatch.Text = "Auto Catch Instant"
+InsantAutoCatch.TextColor3 = Color3.fromRGB(255, 255, 255)
+InsantAutoCatch.TextScaled = true
+InsantAutoCatch.TextSize = 14.000
+InsantAutoCatch.TextWrapped = true
+
+local autoCatchEnabled = false
+
+local function toggleAutoCatch()
+    if not autoCatchEnabled then
+        InsantAutoCatch.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        autoCatchEnabled = true
+        while autoCatchEnabled do
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CatchFish"):FireServer()
+            wait()
+        end
+    else
+        InsantAutoCatch.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        autoCatchEnabled = false
+    end
+end
+
+InsantAutoCatch.MouseButton1Down:Connect(toggleAutoCatch)
+
+Requestfish.Name = "Requestfish"
+Requestfish.Parent = Frame
+Requestfish.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+Requestfish.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Requestfish.BorderSizePixel = 0
+Requestfish.Position = UDim2.new(0.174757287, 0, 0.558558583, 0)
+Requestfish.Size = UDim2.new(0, 200, 0, 50)
+Requestfish.Font = Enum.Font.SourceSans
+Requestfish.Text = "Auto Request Fish"
+Requestfish.TextColor3 = Color3.fromRGB(255, 255, 255)
+Requestfish.TextScaled = true
+Requestfish.TextSize = 14.000
+Requestfish.TextWrapped = true
+
+local autoRequestEnabled = false
+
+local function toggleAutoRequest()
+    if not autoRequestEnabled then
+        Requestfish.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        autoRequestEnabled = true
+        while autoRequestEnabled do
+            local args = {
+                [1] = "Water1"
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RequestFish"):InvokeServer(unpack(args))
+            wait()
+        end
+    else
+        Requestfish.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        autoRequestEnabled = false
+    end
+end
+
+Requestfish.MouseButton1Down:Connect(toggleAutoRequest)
